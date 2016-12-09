@@ -29,6 +29,9 @@ public class JSONArrayIterator {
 				if (currChar == -1)
 					return null;
 				
+				if (isLineBreak(c))
+					continue;
+				
 				if (currChar == '"')
 					insideQuote = !insideQuote;
 				
@@ -70,6 +73,10 @@ public class JSONArrayIterator {
 		while (isWhiteSpace(c = (char) bufferedReader.read()))
 			;
 		return c;
+	}
+	
+	private boolean isLineBreak(char c) {
+		return c == '\r' || c == '\n';
 	}
 	
 	private boolean isWhiteSpace(char c) {
