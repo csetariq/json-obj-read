@@ -29,7 +29,7 @@ public class JSONArrayIterator {
 				if (currChar == -1)
 					return null;
 				
-				if (isLineBreak(c))
+				if (isLineBreak(currChar))
 					continue;
 				
 				if (currChar == '"')
