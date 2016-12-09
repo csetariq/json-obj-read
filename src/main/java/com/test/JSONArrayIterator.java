@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Stack;
 
 public class JSONArrayIterator {
 	private BufferedReader bufferedReader;
@@ -15,19 +16,33 @@ public class JSONArrayIterator {
 	}
 	
 	public String nextJSONObject() throws IOException {
-		
+		Stack<Character> stack = new Stack<Character>();
 		StringBuilder stringBuilder = new StringBuilder();
+		boolean insideQuote = false;
 		char currChar = skipWhiteSpaces();
 		
-		if (currChar == '{') {
+		if (currChar == '{' && !insideQuote) {
+			stack.push(currChar);
 			stringBuilder.append(currChar);
-			while ((currChar = (char) bufferedReader.read()) != '}' && currChar != -1)
+			while (true) {
+				currChar = (char) bufferedReader.read();
+				if (currChar == -1)
+					return null;
+				
+				if (currChar == '"')
+					insideQuote = !insideQuote;
+				
+				if (currChar == '{' && !insideQuote)
+					stack.push('{');
+				
 				stringBuilder.append(currChar);
-			
-			if (currChar == -1)
-				return null;
-			
-			stringBuilder.append(currChar);
+				
+				if (currChar == '}' && !insideQuote)
+						stack.pop();
+				
+				if (stack.isEmpty())
+					break;
+			}
 			return stringBuilder.toString();
 		}
 		return null;
