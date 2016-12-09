@@ -19,11 +19,11 @@ public class JSONArrayIterator {
 		Stack<Character> stack = new Stack<Character>();
 		StringBuilder stringBuilder = new StringBuilder();
 		boolean insideQuote = false;
-		char currChar = skipWhiteSpaces();
+		int currChar = skipWhiteSpaces();
 		
 		if (currChar == '{' && !insideQuote) {
-			stack.push(currChar);
-			stringBuilder.append(currChar);
+			stack.push((char) currChar);
+			stringBuilder.append((char)currChar);
 			while (true) {
 				currChar = (char) bufferedReader.read();
 				if (currChar == -1)
@@ -38,7 +38,7 @@ public class JSONArrayIterator {
 				if (currChar == '{' && !insideQuote)
 					stack.push('{');
 				
-				stringBuilder.append(currChar);
+				stringBuilder.append((char)currChar);
 				
 				if (currChar == '}' && !insideQuote)
 						stack.pop();
@@ -58,7 +58,7 @@ public class JSONArrayIterator {
 			;
 		
 		if ("data".equals(key)) {
-			char lastReadChar = skipWhiteSpaces();
+			int lastReadChar = skipWhiteSpaces();
 			if (lastReadChar == '[')
 				return;
 			else
@@ -68,18 +68,18 @@ public class JSONArrayIterator {
 			throw new IOException("reached EOF before seeing data");
 	}
 	
-	public char skipWhiteSpaces() throws IOException {
-		char c;
-		while (isWhiteSpace(c = (char) bufferedReader.read()))
+	public int skipWhiteSpaces() throws IOException {
+		int c;
+		while (isWhiteSpace(c = bufferedReader.read()))
 			;
 		return c;
 	}
 	
-	private boolean isLineBreak(char c) {
+	private boolean isLineBreak(int c) {
 		return c == '\r' || c == '\n';
 	}
 	
-	private boolean isWhiteSpace(char c) {
+	private boolean isWhiteSpace(int c) {
 		switch(c) {
 		case ' ':
 		case '\t':
@@ -89,6 +89,7 @@ public class JSONArrayIterator {
 		case ':':
 		case ',':
 			return true;
+		case -1:
 		default:
 			return false;
 		}
@@ -99,17 +100,22 @@ public class JSONArrayIterator {
 		boolean quoteStart = false;
 		boolean quoteEnd = false;
 		
-		char c;
-		while ((c = (char) bufferedReader.read()) != '"' && c != -1)
-			;
+		int c;
+		while ((c = bufferedReader.read()) != '"' && c != -1) {
+//			System.out.println((char)c);
+		}
+//		System.out.println(">> " + (char)c);
 		
 		if (c == '"')
 			quoteStart = true;
 		
 		if (quoteStart)
-			while ((c = (char) bufferedReader.read()) != '"' && c != -1)
-				stringBuilder.append(c);
+			while ((c = bufferedReader.read()) != '"' && c != -1) {
+//				System.out.println("inquote " + (char)c);
+				stringBuilder.append((char)c);
+			}
 		
+//		System.out.println("<<< " + (char)c);
 		if (c == '"')
 			quoteEnd = true;
 		
